@@ -1,6 +1,6 @@
 # data #
-*./coffee
-*./cotton
-*./fruits
-*./grains
-*./livestock
+coffee/
+cotton/
+fruits/
+grains/
+livestock/
