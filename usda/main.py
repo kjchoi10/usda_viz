@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.wsgi import WSGIMiddleware
-from dash_app import create_dash_app
+from usda.dash_app_zoom import create_dash_app
 import transform
 
 # run this in terminal: uvicorn main:app --reload
