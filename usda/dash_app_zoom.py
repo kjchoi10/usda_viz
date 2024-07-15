@@ -4,7 +4,6 @@ from dash.dependencies import Input, Output, State
 import plotly.express as px
 import plotly.graph_objs as go
 import pandas as pd
-import numpy as np
 from statsmodels.tsa.seasonal import seasonal_decompose
 import transform
 
@@ -46,17 +45,45 @@ def analyze_trends(df):
     df['Residual'] = results.resid
     return df
 
+def detect_changepoints(values, threshold=0.1):
+    """
+    Simulated changepoint detection based on significant percentage changes in values.
+    """
+    changepoints = []
+    for i in range(1, len(values)):
+        percent_change = abs((values[i] - values[i - 1]) / values[i - 1])
+        if percent_change > threshold:
+            changepoints.append(i)
+    return changepoints
+
+def generate_decade_summaries(df):
+    summaries = []
+    decades = df['Calendar_Year'].astype(str).apply(lambda x: x[:4]).unique()
+    for decade in decades:
+        decade_data = df[df['Calendar_Year'].astype(str).str.startswith(decade)]
+        if not decade_data.empty:
+            max_value = decade_data['Value'].max()
+            min_value = decade_data['Value'].min()
+            decade_summary = f"{decade}: Max Value = {max_value}, Min Value = {min_value}"
+            summaries.append(decade_summary)
+
+    return summaries
+
 def generate_summaries(df):
     summaries = []
     df['Change'] = df['Value'].pct_change()
 
-    consistent_periods = df[df['Change'].abs() < 0.05]
-    increasing_periods = df[df['Change'] > 0.05]
-    decreasing_periods = df[df['Change'] < -0.05]
+    # Detect significant changepoints
+    values = df['Value'].tolist()
+    changepoints = detect_changepoints(values, threshold=0.1)
+    if changepoints:
+        summaries.append(f"Significant changepoints detected at years: {', '.join(str(df.iloc[idx]['Calendar_Year']) for idx in changepoints)}")
 
-    summaries.append(f"Consistent periods: {consistent_periods['Calendar_Year'].min()} to {consistent_periods['Calendar_Year'].max()}")
-    summaries.append(f"Increasing periods: {increasing_periods['Calendar_Year'].min()} to {increasing_periods['Calendar_Year'].max()}")
-    summaries.append(f"Decreasing periods: {decreasing_periods['Calendar_Year'].min()} to {decreasing_periods['Calendar_Year'].max()}")
+    # Generate decade-based summaries
+    decade_summaries = generate_decade_summaries(df)
+    if decade_summaries:
+        summaries.append("Decade summaries:")
+        summaries.extend(decade_summaries)
 
     highest_dropoff = df.loc[df['Drop_Off'].idxmax()]
     lowest_dropoff = df.loc[df['Drop_Off'].idxmin()]
@@ -65,13 +92,6 @@ def generate_summaries(df):
     summaries.append(f"Lowest drop-off in {lowest_dropoff['Calendar_Year']} with a drop of {lowest_dropoff['Drop_Off']}")
 
     return summaries
-
-def get_context_for_summaries(summaries):
-    context = []
-    for summary in summaries:
-        # Placeholder for real context information
-        context.append(f"{summary}. Potential reasons include economic factors, policy changes, and market conditions.")
-    return context
 
 def get_context_for_year(year, highest_value, highest_value_year, lowest_value, lowest_value_year):
     try:
@@ -84,12 +104,29 @@ def get_context_for_year(year, highest_value, highest_value_year, lowest_value, 
         print(f"Error fetching context for year {year}: {str(e)}")
         return "Error fetching context for the year."
 
+def get_context_for_summaries(summaries):
+    try:
+        context_messages = []
+
+        for summary in summaries:
+            print('summary: ', summary)
+            if summary.startswith("Highest drop-off"):
+                context_messages.append("The highest drop-off reflects a significant decrease in values for a specific year.")
+            elif summary.startswith("Lowest drop-off"):
+                context_messages.append("The lowest drop-off represents the least decrease in values observed.")
+            else:
+                context_messages.append("Additional context could be provided here based on specific summaries.")
+
+        return context_messages
+    except Exception as e:
+        print(f"Error fetching context for summaries: {str(e)}")
+        return ["Error fetching context for summaries."]
+
 def create_dash_app():
     initial_dataset = 'Livestock'
     df = load_data(initial_dataset)
 
     app = dash.Dash(__name__)
-    print('app: ', app)
     app.layout = html.Div([
         dcc.Dropdown(
             id='dataset-dropdown',
@@ -127,11 +164,14 @@ def create_dash_app():
     def update_chart(selected_dataset, selected_commodity):
         try:
             df = load_data(selected_dataset)
+            print(f"Loaded data for dataset '{selected_dataset}'. Shape: {df.shape}")
 
             commodity_options = [{'label': commodity, 'value': commodity} for commodity in df['Commodity_Description'].unique()]
+            print(f"Commodity options: {commodity_options}")
 
             if selected_commodity is None:
                 selected_commodity = df['Commodity_Description'].unique()[0]
+                print(f"Selected commodity defaulted to: {selected_commodity}")
 
             filtered_df = df[df['Commodity_Description'] == selected_commodity]
 
@@ -197,7 +237,6 @@ def create_dash_app():
 
             context = get_context_for_year(highest_dropoff_year, highest_value, highest_value_year, lowest_value, lowest_value_year)
             top_dropoffs_text = ", ".join(f"{row['Calendar_Year']} ({row['Drop_Off']})" for _, row in top_dropoffs.iterrows())
-
             summaries = generate_summaries(df)
             context_summaries = get_context_for_summaries(summaries)
             summary_text = " ".join(context_summaries)
@@ -206,7 +245,7 @@ def create_dash_app():
         except Exception as e:
             print(f"Error displaying drop-offs: {str(e)}")
             return "Error displaying drop-offs.", "Error displaying summaries."
-
+        
     return app
 
 if __name__ == '__main__':
