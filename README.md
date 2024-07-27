@@ -7,13 +7,13 @@ This visualization tool aggregates USDA commodities, and inserts the commodity n
 
 - The application is run using Streamlit to display the data, FastAPI to organize Python code, and ChatGPT 4 to process the LLM.
 
-##The first visual is a drop down menu of the USDA commodity data, and the commodity type:
+## The first visual is a drop down menu of the USDA commodity data, and the commodity type:
 <img width="1440" alt="Screenshot 2024-07-27 at 2 27 53 PM" src="https://github.com/user-attachments/assets/24d2f0c5-81ea-4fe3-bed5-d6de0ed65962">
 
-##The second visual is activated once the submit button is clicked on. It provides a bar chart of the commodity with a three-year moving average. Instantly afterwards though the commodity, minimum and maximum date are sent to ChatGPT4 to process a summary text.
+## The second visual is activated once the submit button is clicked on. It provides a bar chart of the commodity with a three-year moving average. Instantly afterwards though the commodity, minimum and maximum date are sent to ChatGPT4 to process a summary text.
 <img width="1440" alt="Screenshot 2024-07-27 at 2 30 58 PM" src="https://github.com/user-attachments/assets/191d4e03-607d-4ac2-9b4c-e7a79680c7b5">
 
-##The third visual is the ChatGPT 4 summary text:
+## The third visual is the ChatGPT 4 summary text:
 <img width="1440" alt="Screenshot 2024-07-27 at 2 31 34 PM" src="https://github.com/user-attachments/assets/1ff72b9b-9741-42ff-8709-29efed698367">
 
 
