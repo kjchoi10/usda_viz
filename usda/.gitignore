@@ -4,6 +4,11 @@ cotton/
 fruits/
 grains/
 livestock/
+<<<<<<< HEAD
 
 # config #
 config.py
+=======
+# config #
+config.py/
+>>>>>>> 28125af989e34a32d79836ad9b47b049aa9fd896

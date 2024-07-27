@@ -46,7 +46,11 @@ class Transform():
             commodity_by_year_exports = commodity_by_year_exports[commodity_by_year_exports['Value'] != 0.0]
         return(commodity_by_year_exports)
     
+<<<<<<< HEAD
     def transform_commodity_by_country_export(self, data: pd.DataFrame, commodity: str, filter = True, origin = 'United States, America'):
+=======
+    def transform_commodity_by_country_export(self, data: pd.DataFrame, filter = True, origin = 'United States, America'):
+>>>>>>> 28125af989e34a32d79836ad9b47b049aa9fd896
         """
         Description:
             Transforms the commodity data into specific commodity (ex. 'Meat, Chicken'), year, export, and by default the origin
@@ -54,22 +58,17 @@ class Transform():
             for all years.
         args:
             data: ex. livestock
-            commodity: ex. 'Meat, Chicken'
             filter: True results to filtering out zero values
             origin: default set to 'United States, America'
         return:
             Transformed dataset at the commodity, country, year export level.
         """
-        country_year_commodity_yield = data.groupby(['Commodity_Description', 'Country_Name', 'Calendar_Year', 'Attribute_Description'])['Value'].sum().reset_index()
-        commodity = country_year_commodity_yield[country_year_commodity_yield['Commodity_Description'] == commodity]
-        commodity = commodity[commodity['Attribute_Description'] == 'Exports']
+        commodity_yield = data.groupby(['Commodity_Description', 'Country_Name', 'Calendar_Year', 'Attribute_Description'])['Value'].sum().reset_index()
+        commodity = commodity_yield[commodity_yield['Attribute_Description'] == 'Exports']
         commodity['Origin'] = origin
-        # Remove any values where there are zeros
-        if filter:
-            commodity = commodity[commodity['Value'] != 0.0]
         return(commodity.sort_values(by='Calendar_Year'))
     
-    def transform_commodity_by_export(self, data: pd.DataFrame, commodity: str, filter = True, origin = 'United States, America'):
+    def transform_commodity_by_export(self, data: pd.DataFrame, filter = True, origin = 'United States, America'):
         """
         Description:
             Transforms the commodity data into specific commodity (ex. 'Meat, Chicken'), year, export, and by default the origin
@@ -83,6 +82,7 @@ class Transform():
         return:
             Transformed dataset at the commodity, year, export level.
         """
+<<<<<<< HEAD
         country_year_commodity_yield = data.groupby(['Commodity_Description', 'Calendar_Year', 'Attribute_Description'])['Value'].sum().reset_index()
         commodity = country_year_commodity_yield[country_year_commodity_yield['Commodity_Description'] == commodity]
         commodity = commodity[commodity['Attribute_Description'] == 'Exports']
@@ -112,3 +112,9 @@ class Transform():
         if filter:
             commodity = commodity[commodity['Value'] != 0.0]
         return(commodity.sort_values(by='Calendar_Year'))
+=======
+        commodity_yield = data.groupby(['Commodity_Description', 'Calendar_Year', 'Attribute_Description'])['Value'].sum().reset_index()
+        commodity_yield  = commodity_yield[commodity_yield['Attribute_Description'] == 'Exports']
+        commodity_yield['Origin'] = origin
+        return(commodity_yield.sort_values(by='Calendar_Year'))
+>>>>>>> 28125af989e34a32d79836ad9b47b049aa9fd896
