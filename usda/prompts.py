@@ -1,0 +1,3 @@
+prompts = {'starter': "Given the commodity related to {selected_commodity}, can you provide me the top five insights or trends between the dates {x_min} to {x_max} about the commodity as USA export with references? Please provide specific dates if you've provided any updates on outbreaks, trade agreements, globalization trends, or economic research. It's fine to add sub-bullet points. Please remove any note about being an AI agent in your response.",
+           'volatility': "Can you provide me the top reason for each {volatility} volatility period by reviewing historical USDA policy changes and their impact on {commodity} exports. Please provide reference links."
+}
