@@ -60,11 +60,8 @@ class Transform():
             Transformed dataset at the commodity, country, year export level.
         """
         commodity_yield = data.groupby(['Commodity_Description', 'Country_Name', 'Calendar_Year', 'Attribute_Description'])['Value'].sum().reset_index()
-        commodity = commodity_yield [commodity_yield ['Attribute_Description'] == 'Exports']
+        commodity = commodity_yield[commodity_yield['Attribute_Description'] == 'Exports']
         commodity['Origin'] = origin
-        # Remove any values where there are zeros
-        if filter:
-            commodity = commodity[commodity['Value'] != 0.0]
         return(commodity.sort_values(by='Calendar_Year'))
     
     def transform_commodity_by_export(self, data: pd.DataFrame, filter = True, origin = 'United States, America'):
@@ -82,9 +79,6 @@ class Transform():
             Transformed dataset at the commodity, year, export level.
         """
         commodity_yield = data.groupby(['Commodity_Description', 'Calendar_Year', 'Attribute_Description'])['Value'].sum().reset_index()
-        commodity_yield  = commodity_yield [commodity_yield ['Attribute_Description'] == 'Exports']
+        commodity_yield  = commodity_yield[commodity_yield['Attribute_Description'] == 'Exports']
         commodity_yield['Origin'] = origin
-        # Remove any values where there are zeros
-        if filter:
-            commodity_yield  = commodity_yield [commodity_yield ['Value'] != 0.0]
-        return(commodity_yield .sort_values(by='Calendar_Year'))
+        return(commodity_yield.sort_values(by='Calendar_Year'))
