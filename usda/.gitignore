@@ -4,3 +4,6 @@ cotton/
 fruits/
 grains/
 livestock/
+
+# config #
+config.py
